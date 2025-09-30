@@ -231,7 +231,6 @@ datasets/
 checkpoints/
 data/raw/
 data/processed/
-experiments/
 wandb/
 
 # Config files with sensitive data
