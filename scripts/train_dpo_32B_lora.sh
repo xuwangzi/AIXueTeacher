@@ -8,9 +8,11 @@ set -e  # 遇到错误立即退出
 set -o pipefail # 任何管道失败都退出，避免误报“训练完成”
 
 # 设置目录
-DATASET_PATH="datasets/aixue_dpo_dataset"
-PRETRAINED_MODEL_PATH="/root/group-shared/models/base_models/Qwen3-8B"
-OUTPUT_DIR="models/trained_models/Qwen3-8B-DPO"
+DATASET_PATH="datasets/aixue_dpo_dataset_bad_cases"
+# DATASET_PATH="datasets/ultrafeedback_binarized" # demo
+PRETRAINED_MODEL_PATH="/root/group-shared/models/base_models/Qwen3-32B"
+OUTPUT_DIR="models/trained_models/Qwen3-32B-DPO-lora"
+# OUTPUT_DIR="models/trained_models/Qwen3-32B-DPO-demo" # demo
 
 TIMESTAMP=$(date "+%Y%m%d_%H%M%S")
 LOG_DIR="logs/training"
@@ -23,11 +25,11 @@ echo -e "✅ 开始训练\n模型: ${PRETRAINED_MODEL_PATH}\n数据: ${DATASET_P
 
 # 启动训练
 accelerate launch \
-    --config_file configs/accelerate_configs/deepspeed_zero3.yaml \
+    --config_file configs/accelerate_configs/deepspeed_zero3_offload.yaml \
     src/dpo/dpo.py \
     --dataset_name "${DATASET_PATH}" \
     --model_name_or_path "${PRETRAINED_MODEL_PATH}" \
-    --learning_rate 5.0e-7 \
+    --learning_rate 1.0e-9 \
     --num_train_epochs 4 \
     --per_device_train_batch_size 2 \
     --gradient_accumulation_steps 2 \
@@ -42,8 +44,12 @@ accelerate launch \
     --save_steps 50 \
     --save_total_limit 5 \
     --no_remove_unused_columns \
+    --use_peft \
+    --lora_r 32 \
+    --lora_alpha 16 \
     --report_to tensorboard \
     2>&1 | tee "${LOG_DIR}/train_${TIMESTAMP}.log"  
+
 
 # -e 选项用于使 echo 支持转义字符（如 \n 实现换行），否则 \n 会被当作普通字符输出
 echo -e "✅ 训练完成！\n模型保存在: ${OUTPUT_DIR}\n训练日志: ${LOG_DIR}/train_${TIMESTAMP}.log" | tee -a "${LOG_DIR}/train_${TIMESTAMP}.log"

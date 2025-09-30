@@ -23,7 +23,7 @@
     "score_rejected": 0
 }
 
-python src/dpo/format_data.py --input datasets/aixue_bad_case/all_bad_cases.json --output datasets/aixue_dpo_dataset --format dataset --train_ratio 0.8
+python src/dpo/format_data.py --input datasets/aixue_bad_case/repeat_cases.json --output datasets/aixue_dpo_dataset_repeated_cases --format dataset --train_ratio 0.8
 """
 
 import json
