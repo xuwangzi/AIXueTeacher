@@ -1,3 +1,6 @@
 [submodule "modules/AIXueRLHF"]
 	path = modules/AIXueRLHF
 	url = https://github.com/Leslie-Jiang-99/AIXueRLHF.git
+[submodule "modules/aixue-rlhf-vf"]
+	path = modules/aixue-rlhf-vf
+	url = git@github.com:xuwangzi/aixue-rlhf-vf.git
